@@ -50,7 +50,7 @@ In this tutorial, we will use the ROS 2 Humble distribution as the example.
 Official installation guide:
 https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html
 
-The following is the summary and the experience on troubleshooting and pitfalls.
+The following is a summary and the experience on troubleshooting and pitfalls.
 
 Run the following script to set up the required dependencies and environment:
 
@@ -184,5 +184,23 @@ OpenGL renderer string: D3D12 (Intel(R) UHD Graphics)
 > echo "export QT_X11_NO_MITSHM=1" >> ~/.bashrc
 > source ~/.bashrc
 > ```
-## common pitfall on wsl2
 
+## Common Pitfall on WSL2
+
+### ROS 2 CLI commands hang
+
+If ROS 2 commands such as `ros2 topic list` hang in WSL2, the ROS 2 CLI or discovery daemon may be unresponsive. In my case, restarting the WSL service resolved the issue. From a Windows PowerShell terminal, shut down WSL and then reopen the Ubuntu distribution:
+
+```powershell
+wsl --shutdown
+```
+
+After reopening the distribution, source the ROS 2 and workspace setup files again, then verify that the ROS graph is available:
+
+```bash
+source /opt/ros/humble/setup.bash
+source ~/Assignment2/install/setup.bash  # adjust this path to your workspace
+ros2 topic list -t
+```
+
+`ros2 topic echo <topic>` is expected to keep running while it waits for messages; stop it with `Ctrl+C`. If the topic list still hangs after restarting WSL, investigate the ROS 2 daemon and verify that the simulator and CLI use the same ROS 2 environment and `ROS_DOMAIN_ID`.
